@@ -128,6 +128,7 @@ select.filtered{border-color:var(--gold3);color:var(--gold);background:var(--gol
 /* Icon style for toolbar */
 .action-row .surprise-btn{color:var(--gold) !important}
 .action-row .surprise-btn::before{content:'🎲';font-size:22px;line-height:1}
+.action-row .action-btn#btn-map::before{content:'🗺️';font-size:20px;line-height:1}
 .action-row .action-btn#btn-mybar::before{content:'🍶';font-size:20px;line-height:1}
 .action-row .action-btn#btn-favs::before{content:'❤️';font-size:20px;line-height:1}
 .action-row .action-btn#btn-ings::before{content:'🧪';font-size:20px;line-height:1}
@@ -576,8 +577,38 @@ main{max-width:1400px;margin:0 auto;padding:20px 16px 40px}
 .ing-panel{display:none}
 .ing-panel.show{display:block;padding:0 16px 24px;max-width:1400px;margin:0 auto}
 
+.hero-shell{max-width:1400px;margin:22px auto 0;padding:0 16px 8px;display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.hero-copy,.hero-metrics,.map-shell{background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--border);border-radius:var(--radius-lg);backdrop-filter:blur(12px)}
+.hero-copy{padding:24px 24px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.hero-kicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);font-family:var(--font-mono);margin-bottom:8px}
+.hero-copy h2{font-family:var(--font-display);font-size:34px;line-height:1.1;color:#fff;max-width:18ch;margin-bottom:12px}
+.hero-copy p{font-size:13px;color:var(--cream2);max-width:62ch}
+.hero-metrics{display:grid;grid-template-columns:1fr;gap:8px;padding:14px}
+.hero-metrics div{display:flex;align-items:baseline;justify-content:space-between;padding:12px 14px;border-radius:12px;background:rgba(12,12,16,.8);border:1px solid var(--border)}
+.hero-metrics span{font-family:var(--font-display);font-size:28px;color:var(--gold2);line-height:1}
+.hero-metrics small{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream3);font-family:var(--font-mono)}
+
+.map-shell{max-width:1400px;margin:8px auto 0;padding:16px}
+.map-head h3{font-family:var(--font-display);font-size:24px;color:var(--cream);margin-bottom:4px}
+.map-head p{font-size:12px;color:var(--cream3);margin-bottom:12px}
+.map-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.map-chip{border:1px solid var(--border);background:var(--bg3);color:var(--cream2);border-radius:999px;padding:10px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s ease;text-align:left}
+.map-chip:hover{transform:translateY(-2px);border-color:var(--border2);color:var(--cream)}
+.map-chip.active{background:var(--gold4);border-color:var(--gold3);color:var(--gold2)}
+.map-chip span{opacity:.75;font-size:10px;margin-left:6px}
+.map-insight{margin-top:12px;padding:12px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border);font-size:12px;color:var(--cream2)}
+
 /* ═══ RESPONSIVE ═══ */
+@media(max-width:980px){
+  .hero-shell{grid-template-columns:1fr}
+  .hero-copy h2{font-size:28px}
+}
 @media(max-width:680px){
+  .hero-shell{padding:0 10px 8px}
+  .map-shell{padding:12px;margin-top:2px}
+  .map-board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-copy{padding:18px}
+  .hero-copy h2{font-size:22px}
   .card-thumb{height:180px}
   .card-top{margin-top:-50px}
   .controls{padding:8px 12px 12px;gap:6px}
@@ -699,12 +730,35 @@ main{max-width:1400px;margin:0 auto;padding:20px 16px 40px}
   </div>
   <div class="action-row">
     <button class="surprise-btn" onclick="surpriseMe()">Surprise</button>
+    <button class="action-btn" id="btn-map" onclick="toggleWorldMap()">World Map</button>
     <button class="action-btn" id="btn-mybar" onclick="openMyBar()">My Bar</button>
     <button class="action-btn" id="btn-favs" onclick="toggleFavourites()">Favourites</button>
     <button class="action-btn" id="btn-ings" onclick="toggleIngredientsPanel()">Ingredients</button>
     <button class="action-btn" id="btn-swap" onclick="openSwapLab()">Swap Lab</button>
   </div>
 </header>
+
+<section class="hero-shell">
+  <div class="hero-copy">
+    <p class="hero-kicker">Shakerrr Atlas Edition</p>
+    <h2>Craft, discover, and travel through cocktails.</h2>
+    <p>Explore recipes with cover photos, fast filters, and an interactive world map to jump directly to each country's signature drinks and ingredients.</p>
+  </div>
+  <div class="hero-metrics">
+    <div><span id="hero-recipes">0</span><small>recipes</small></div>
+    <div><span id="hero-countries">0</span><small>countries</small></div>
+    <div><span id="hero-noabv">0</span><small>non-alcoholic</small></div>
+  </div>
+</section>
+
+<section class="map-shell" id="world-map-shell">
+  <div class="map-head">
+    <h3>Interactive Cocktail World Map</h3>
+    <p>Tap a country to filter recipes + see staple ingredients and cocktail culture highlights.</p>
+  </div>
+  <div class="map-board" id="map-board"></div>
+  <div class="map-insight" id="map-insight">Choose a country on the map to see signature ingredients and available recipes.</div>
+</section>
 
 <!-- My Bar Modal -->
 <div class="modal-overlay" id="mybar-modal">
@@ -2866,6 +2920,79 @@ const OPEN = new Set();
 const ACTIVE_TAB = {};
 const ANIMATIONS = {};
 
+let MAP_MODE = false;
+let MAP_COUNTRY = '';
+
+const MAP_SPOTLIGHT = {
+  Italy:['Campari','Sweet Vermouth','Aperol'], USA:['Rye Whiskey','Bourbon','Angostura Bitters'], Cuba:['White Rum','Lime','Mint'],
+  France:['Cognac','Champagne','Lillet Blanc'], Mexico:['Tequila','Mezcal','Agave Syrup'], UK:['London Dry Gin','Dry Vermouth','Earl Grey'],
+  Japan:['Whisky','Yuzu','Matcha'], Brazil:['Cachaça','Lime','Sugar'], Singapore:['Gin','Cherry Liqueur','Benedictine'],
+  Spain:['Sherry','Vermouth','Cava'], Germany:['Jägermeister','Wheat Beer','Elderflower'], Canada:['Whisky','Clamato','Maple Syrup'],
+  Ireland:['Irish Whiskey','Coffee','Cream'], Peru:['Pisco','Lime','Egg White'], Caribbean:['Dark Rum','Allspice Dram','Falernum'],
+  Argentina:['Fernet','Soda','Malbec'], Russia:['Vodka','Coffee Liqueur','Cream'], Turkey:['Rakı','Anise','Pomegranate'],
+  Portugal:['Port Wine','White Port','Tonic'], Greece:['Ouzo','Lemon','Honey'], Netherlands:['Genever','Orange Bitters','Vermouth'],
+  'South Korea':['Soju','Yakult','Yuzu'], India:['Mango','Chai Spice','Lime'], Chile:['Pisco','Ginger','Lemon'], Sweden:['Aquavit','Lingonberry','Dill'],
+  Kenya:['Coffee','Honey','Passionfruit'], 'South Africa':['Amarula','Rooibos','Brandy'], Lebanon:['Arak','Rose Water','Mint'], 'Puerto Rico':['Coconut Cream','Pineapple','Aged Rum']
+};
+
+function updateHeroStats() {
+  const countries = new Set(C.map(c => c.country).filter(Boolean));
+  const na = C.filter(c => c.cat === 'Non-Alcoholic').length;
+  const rs = document.getElementById('hero-recipes');
+  const cs = document.getElementById('hero-countries');
+  const ns = document.getElementById('hero-noabv');
+  if (rs) rs.textContent = C.length;
+  if (cs) cs.textContent = countries.size;
+  if (ns) ns.textContent = na;
+}
+
+function renderWorldMap(vis = getVis()) {
+  const board = document.getElementById('map-board');
+  if (!board) return;
+  const countries = [...new Set(C.filter(c => c.country).map(c => c.country))].sort((a,b)=>a.localeCompare(b));
+  board.innerHTML = countries.map(country => {
+    const allCount = C.filter(c => c.country === country).length;
+    const filteredCount = vis.filter(c => c.country === country).length;
+    const active = MAP_COUNTRY === country ? 'active' : '';
+    return `<button class="map-chip ${active}" onclick="selectMapCountry('${country.replace(/'/g,"\'")}')">${getFlag(country)} ${country}<span>${filteredCount}/${allCount}</span></button>`;
+  }).join('');
+}
+
+function selectMapCountry(country) {
+  MAP_COUNTRY = country;
+  const countrySel = document.getElementById('f-country');
+  if (countrySel) countrySel.value = country;
+  MAP_MODE = true;
+  const btn = document.getElementById('btn-map');
+  if (btn) btn.classList.add('active');
+  const ins = document.getElementById('map-insight');
+  if (ins) {
+    const recs = C.filter(c => c.country === country).slice(0,4).map(c => c.name).join(' • ');
+    const star = (MAP_SPOTLIGHT[country] || ['Regional bitter','Citrus','Local spirit']).join(', ');
+    ins.innerHTML = `<strong>${getFlag(country)} ${country}</strong> spotlight ingredients: ${star}. <br>Popular recipes: ${recs || 'No recipes yet in dataset.'}`;
+  }
+  doFilter();
+}
+
+function toggleWorldMap() {
+  MAP_MODE = !MAP_MODE;
+  const shell = document.getElementById('world-map-shell');
+  const btn = document.getElementById('btn-map');
+  if (!shell || !btn) return;
+  if (MAP_MODE) {
+    shell.scrollIntoView({behavior:'smooth',block:'start'});
+    btn.classList.add('active');
+  } else {
+    MAP_COUNTRY = '';
+    const countrySel = document.getElementById('f-country');
+    if (countrySel) countrySel.value = '';
+    btn.classList.remove('active');
+    const ins = document.getElementById('map-insight');
+    if (ins) ins.textContent = 'Choose a country on the map to see signature ingredients and available recipes.';
+    doFilter();
+  }
+}
+
 function togF(k) {
   ACTV[k] = !ACTV[k];
   document.getElementById('bl1').classList.toggle('on', !!ACTV.l1);
@@ -4727,7 +4854,7 @@ function closeAllCards() {
 }
 
 // INIT
-window.addEventListener('load', () => { doFilter(); });
+window.addEventListener('load', () => { updateHeroStats(); doFilter(); renderWorldMap(getVis()); });
 document.getElementById('mybar-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeMyBar(); });
 
 /* ==========================================================
@@ -4887,6 +5014,7 @@ function doFilter() {
   const v = getVis();
   document.getElementById('count-disp').textContent = `${v.length} / ${C.length}`;
   renderAll(v);
+  renderWorldMap(v);
   // IMPORTANT: this was missing — without it, thumbnails never load.
   try { initThumbObserver(); } catch(e) {}
 }
